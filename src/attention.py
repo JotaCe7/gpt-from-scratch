@@ -1,3 +1,12 @@
+"""
+This module contains the core attention mechanisms used in a GPT-style
+transformer model.
+
+It includes the implementation for a single Causal Self-Attention head as
+well as the complete Multi-Head Attention layer, which combines multiple
+heads to capture diverse relationships in the input sequence.
+"""
+
 import torch
 import torch.nn as nn
 
