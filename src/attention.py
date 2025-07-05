@@ -12,9 +12,9 @@ import torch.nn as nn
 
 class CausalSelfAttention(nn.Module):
     """A self-attention module with a causal nask."""
+
     def __init__(self, d_in: int, d_out: int, context_length:int,
                  dropout_rate: float, qkv_bias = False) -> None:
-        super().__init__()
         """
         Initializes the Causal Self-Attention layer.
 
@@ -25,6 +25,7 @@ class CausalSelfAttention(nn.Module):
             dropout_rate (float): The dropout rate.
             qkv_bias (bool): Whether to include a bias term in the Q, K, V linear layers.
         """
+        super().__init__()
 
         self.d_out = d_out
 
@@ -68,6 +69,7 @@ class CausalSelfAttention(nn.Module):
 
 class MultiHeadAttention(nn.Module):
     """An efficient multi-head attention module with weight splitting."""
+    
     def __init__(self, d_in: int, d_out: int, context_length: int,
                  dropout_rate: float, num_heads: int, qkv_bias: bool = False) -> None:
         """
