@@ -1,3 +1,12 @@
+"""
+This module defines the final GPT model architecture by assembling the
+individual components from the `layers` and `attention` modules.
+
+It contains the `TransformerBlock`, which is the fundamental repeating
+unit of the model, and the top-level `GPTModel` class that brings
+everything together from input embeddings to final output logits.
+"""
+
 import torch
 import torch.nn as nn
 from .layers import LayerNorm, FeedForward
@@ -23,7 +32,7 @@ class TransformerBlock(nn.Module):
             context_length=cfg["context_length"],
             num_heads=cfg["n_heads"],
             dropout_rate=cfg["dropout_rate"],
-            qkv_bias=cfg["qkv_bias"]
+            qkv_bias=cfg["qkv_bias"],
         )
 
         self.ff = FeedForward(cfg)
@@ -57,3 +66,50 @@ class TransformerBlock(nn.Module):
         x = shortcut + self.drop_shortcut(ff_output)
 
         return x
+    
+
+class GPTModel(nn.Module):
+    """The full GPT model architecture"""
+
+    def __init__(self, cfg: dict) -> None:
+        """
+        Initializes the GPTModel.
+
+        Args:
+            cfg (dict): The model configuration dictionary containing all
+                        hyperparameters for the model architecture.
+        """
+        super().__init__()
+        self.tok_emb = nn.Embedding(cfg["vocab_size"], cfg["emb_dim"])
+        self.pos_emb = nn.Embedding(cfg["context_length"], cfg["emb_dim"])
+        self.drop_emb = nn.Dropout(cfg["dropout_rate"])
+
+        self.trf_blocks = nn.Sequential(
+            *[TransformerBlock(cfg) for _ in range(cfg["n_layers"])]
+        )
+
+        self.final_norm = LayerNorm(cfg["emb_dim"])
+        self.out_head = nn.Linear(cfg["emb_dim"], cfg["vocab_size"], bias=False)
+
+    def forward(self, in_idx: torch.Tensor) -> torch.Tensor:
+        """
+        Performs the forward pass of the GPT model.
+
+        Args:
+            in_idx (torch.Tensor): The input tensor of token indices, with shape
+                                   (batch_size, seq_len).
+        
+        Returns:
+            torch.Tensor: The output logits tensor, with shape
+                          (batch_size, seq_len, vocab_size)
+        """
+        batch_size, seq_len = in_idx.shape
+        tok_embeds = self.tok_emb(in_idx)
+        pos_embeds = self.pos_emb(torch.arange(seq_len, device=in_idx.device))
+        x = tok_embeds + pos_embeds
+        x = self.drop_emb(x)
+        x = self.trf_blocks(x)
+        x = self.final_norm(x)
+        logits = self.out_head(x)
+
+        return logits
