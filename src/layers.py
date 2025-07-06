@@ -7,7 +7,7 @@ import math
 import torch
 import torch.nn as nn
 
-class LaayerNorm(nn.Module):
+class LayerNorm(nn.Module):
     """A custom Layer Normalization module."""
 
     def __init__(self, emb_dim: int) -> None:
