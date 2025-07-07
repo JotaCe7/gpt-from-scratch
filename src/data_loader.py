@@ -23,7 +23,7 @@ class GPTDatasetV1(Dataset):
         token_ids = tokenizer.encode(txt)
 
         # Step 2: Use a sliding window to create chunks of text
-        for i in range(0,len(token_ids), stride):
+        for i in range(0,len(token_ids) - max_length, stride):
             # The input chunk is a sequence of tokens of size max_length
             input_chunk = token_ids[i:i + max_length]
             # The target chunk is the same sequence, shifted by one token to the right
@@ -50,13 +50,19 @@ class GPTDatasetV1(Dataset):
         return self.input_ids[index], self.target_ids[index]
 
 
-def create_dataloader(txt: str, batch_size: int = 4, max_length: int = 256, stride: int = 128, shuffle: bool = True) -> DataLoader:
+def create_dataloader(txt: str, batch_size: int = 4, max_length: int = 256, stride: int = 128,
+                      shuffle: bool = True, drop_last: bool = True, num_workers: int = 0) -> DataLoader:
     """
     Creates a PyTorch DataLoader from a raw text string.
 
     Args:
         txt (str): The raw text to looad.
         batch_size (int): The number of sequences per batch.
+        max_length (int): The context size for the model.
+        stride (int): The step size for the sliding window.
+        shuffle (bool): Whether to shuffle the data chunks.
+        drop_last (bool): Whether to drop the last incomplete batch.
+        num_workers (int): Number of subprocesses to use for data loading.
     
     Returns:
         DataLoader: A PyTorch DataLoader instance ready for training.
@@ -71,7 +77,9 @@ def create_dataloader(txt: str, batch_size: int = 4, max_length: int = 256, stri
     dataloader = DataLoader(
         dataset=dataset,
         batch_size=batch_size,
-        shuffle=shuffle
+        shuffle=shuffle,
+        drop_last=drop_last,
+        num_workers=num_workers
     )
 
     return dataloader
