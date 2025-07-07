@@ -23,5 +23,6 @@ def load_data(file_path: str, url: str = None) -> str:
         print(f"File '{file_path}' already exists. Loading fomr disk...")
         with open(file_path, "r", encoding="utf-8") as file:
             text_data = file.read()
+        print("Load complete.")
     
     return text_data
