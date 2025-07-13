@@ -1,5 +1,15 @@
+"""
+This module provides a collection of general-purpose helper functions
+used throughout the `gpt-from-scratch` project, including data loading
+and token conversion utilities.
+"""
+
 import os
 import urllib.request
+
+import torch
+
+from .tokenizing import Tokenizer
 
 
 def load_data(file_path: str, url: str = None) -> str:
@@ -27,3 +37,34 @@ def load_data(file_path: str, url: str = None) -> str:
         print("Load complete.")
     
     return text_data
+
+
+def text_to_token_ids(text: str, tokenizer: Tokenizer) -> torch.Tensor:
+    """
+    Converts a string of text into a batch of token IDs.
+
+    Args:
+        text (str): The input text string.
+        tokenizer (Tokenizer): The tokenizer instance.
+
+    Returns:
+        torch.Tensor: A 2D tensor of shape (1, num_tokens).
+    """
+    encoded = tokenizer.encode(text, allowed_special={'<|endoftext|>'})
+    encoded_tensor = torch.tensor(encoded).unsqueeze(0)  # Add batch dimension
+    return encoded_tensor
+
+
+def token_ids_to_text(token_ids: torch.Tensor, tokenizer: Tokenizer) -> str:
+    """
+    Converts a batch of token IDs back into a string of text.
+
+    Args:
+        token_ids (torch.Tensor): A 2D tensor of shape (1, num_tokens).
+        tokenizer (Tokenizer): The tokenizer instance.
+
+    Returns:
+        str: The decoded text string.
+    """
+    flat = token_ids.squeeze(0)  # Remove batch dimension
+    return tokenizer.decode(flat.tolist())
