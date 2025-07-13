@@ -1,6 +1,7 @@
 import os
 import urllib.request
 
+
 def load_data(file_path: str, url: str = None) -> str:
     """
     Downloads a text file if it doesn't exist locally, then reads and return its content.

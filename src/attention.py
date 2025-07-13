@@ -10,6 +10,7 @@ heads to capture diverse relationships in the input sequence.
 import torch
 import torch.nn as nn
 
+
 class CausalSelfAttention(nn.Module):
     """A self-attention module with a causal nask."""
 

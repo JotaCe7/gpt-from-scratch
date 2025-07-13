@@ -7,6 +7,7 @@ import torch
 import tiktoken
 from torch.utils.data import Dataset, DataLoader
 
+
 class GPTDatasetV1(Dataset):
     def __init__(self, txt: str, tokenizer, max_length: int, stride: int):
         """

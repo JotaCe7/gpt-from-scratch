@@ -9,8 +9,10 @@ everything together from input embeddings to final output logits.
 
 import torch
 import torch.nn as nn
+
 from .layers import LayerNorm, FeedForward
 from .attention import MultiHeadAttention
+
 
 class TransformerBlock(nn.Module):
     """The complete Transformer Block, which is the core repeating unit
