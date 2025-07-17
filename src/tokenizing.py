@@ -1,3 +1,10 @@
+"""
+This module defines the abstract protocols for tokenization tasks.
+
+It provides a standard `Tokenizer` interface to ensure compatibility
+between different tokenizer implementations used throughout the project.
+"""
+
 from typing import Protocol, Any
 
 
